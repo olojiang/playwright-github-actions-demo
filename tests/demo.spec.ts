@@ -14,7 +14,7 @@ test.describe('网站访问和截图演示', () => {
     
     // 截取全屏
     await page.screenshot({ 
-      path: 'test-results/httpbin-fullpage.png',
+      path: 'screenshots/httpbin-fullpage.png',
       fullPage: true 
     });
     
@@ -33,7 +33,7 @@ test.describe('网站访问和截图演示', () => {
     
     // 截取首屏
     await page.screenshot({ 
-      path: 'test-results/github-homepage.png' 
+      path: 'screenshots/github-homepage.png' 
     });
     
     console.log('✅ GitHub 访问成功，已截图');
@@ -57,7 +57,7 @@ test.describe('网站访问和截图演示', () => {
     
     // 截图
     await page.screenshot({ 
-      path: 'test-results/baidu-search.png',
+      path: 'screenshots/baidu-search.png',
       fullPage: true 
     });
     
@@ -83,7 +83,7 @@ test.describe('网站访问和截图演示', () => {
     
     // 截图 - 表单填写完成
     await page.screenshot({ 
-      path: 'test-results/form-filled.png' 
+      path: 'screenshots/form-filled.png' 
     });
     
     // 提交表单
@@ -97,7 +97,7 @@ test.describe('网站访问和截图演示', () => {
     
     // 截图 - 提交结果
     await page.screenshot({ 
-      path: 'test-results/form-submitted.png',
+      path: 'screenshots/form-submitted.png',
       fullPage: true 
     });
     
@@ -121,7 +121,7 @@ test.describe('网站访问和截图演示', () => {
     
     // 移动端截图
     await page.screenshot({ 
-      path: 'test-results/mobile-view.png' 
+      path: 'screenshots/mobile-view.png' 
     });
     
     await context.close();
