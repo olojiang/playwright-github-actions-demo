@@ -12,6 +12,8 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
@@ -28,36 +30,36 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Create test-results directory
-      run: mkdir -p test-results
+    - name: Create screenshots directory
+      run: mkdir -p screenshots
 
     - name: Run Playwright tests
       run: npx playwright test
       env:
         CI: true
 
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
+    - name: Move screenshots to directory
       if: always()
-      with:
-        name: playwright-test-results
-        path: |
-          test-results/
-          playwright-report/
-        retention-days: 30
+      run: |
+        mkdir -p screenshots
+        cp test-results/*.png screenshots/ 2>/dev/null || true
+        ls -la screenshots/
 
-    - name: Upload screenshots
-      uses: actions/upload-artifact@v4
+    - name: Commit and push screenshots
       if: always()
-      with:
-        name: screenshots
-        path: test-results/*.png
-        retention-days: 30
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "GitHub Actions Bot"
+        git add screenshots/
+        git diff --staged --quiet || git commit -m "Add screenshots from Playwright tests [skip ci]"
+        git push
 
   # 分片并发测试演示
   test-sharded:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -79,15 +81,26 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
+    - name: Create screenshots directory
+      run: mkdir -p screenshots
+
     - name: Run sharded tests
       run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       env:
         CI: true
 
-    - name: Upload shard results
-      uses: actions/upload-artifact@v4
+    - name: Move screenshots to directory
       if: always()
-      with:
-        name: test-results-shard-${{ matrix.shardIndex }}
-        path: test-results/
-        retention-days: 30
+      run: |
+        mkdir -p screenshots
+        cp test-results/*.png screenshots/ 2>/dev/null || true
+        ls -la screenshots/
+
+    - name: Commit and push screenshots
+      if: always()
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "GitHub Actions Bot"
+        git add screenshots/
+        git diff --staged --quiet || git commit -m "Add screenshots from shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }} [skip ci]"
+        git push
