@@ -89,15 +89,18 @@ npm run report
 - 每个分片并行运行
 - 提高测试效率
 
-## 📸 截图示例
+## 📸 截图保存位置
 
-运行测试后会生成以下截图：
+测试运行后，截图会直接提交到仓库的 `screenshots/` 目录中：
+
 - `httpbin-fullpage.png` - httpbin.org 全屏截图
 - `github-homepage.png` - GitHub 首页截图
 - `baidu-search.png` - 百度搜索结果页
 - `form-filled.png` - 表单填写完成
 - `form-submitted.png` - 表单提交结果
 - `mobile-view.png` - 移动端视口截图
+
+每次测试运行后，GitHub Actions 会自动将截图提交到仓库。
 
 ## 🔧 配置文件说明
 
