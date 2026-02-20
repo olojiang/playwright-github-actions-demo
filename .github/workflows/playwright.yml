@@ -18,6 +18,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -34,73 +36,16 @@ jobs:
       run: mkdir -p screenshots
 
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright test --project=chromium
       env:
         CI: true
-
-    - name: Move screenshots to directory
-      if: always()
-      run: |
-        mkdir -p screenshots
-        cp test-results/*.png screenshots/ 2>/dev/null || true
-        ls -la screenshots/
 
     - name: Commit and push screenshots
       if: always()
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "GitHub Actions Bot"
+        git pull origin master --rebase || true
         git add screenshots/
         git diff --staged --quiet || git commit -m "Add screenshots from Playwright tests [skip ci]"
-        git push
-
-  # 分片并发测试演示
-  test-sharded:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        shardIndex: [1, 2]
-        shardTotal: [2]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-
-    - name: Create screenshots directory
-      run: mkdir -p screenshots
-
-    - name: Run sharded tests
-      run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-      env:
-        CI: true
-
-    - name: Move screenshots to directory
-      if: always()
-      run: |
-        mkdir -p screenshots
-        cp test-results/*.png screenshots/ 2>/dev/null || true
-        ls -la screenshots/
-
-    - name: Commit and push screenshots
-      if: always()
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "GitHub Actions Bot"
-        git add screenshots/
-        git diff --staged --quiet || git commit -m "Add screenshots from shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }} [skip ci]"
-        git push
+        git push || (git pull origin master --rebase && git push)
